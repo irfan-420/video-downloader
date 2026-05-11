@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ভিডিও ডাউনলোডার</title>
+    <style>
+        body { font-family: Arial; text-align: center; background-color: #f4f4f4; padding: 20px; }
+        .box { background: white; padding: 20px; border-radius: 10px; max-width: 100%; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input { width: 90%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
+        button { width: 95%; padding: 12px; background: #E62117; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight:bold; cursor: pointer; }
+        #loading { display: none; color: #555; margin-top: 10px; }
+        .btn { display: block; padding: 12px; background: #007bff; color: white; text-decoration: none; margin-top: 10px; border-radius: 5px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>অল-ইন-ওয়ান ডাউনলোডার</h2>
+        <input type="text" id="urlInput" placeholder="যেকোনো ভিডিওর লিংক পেস্ট করুন...">
+        <button onclick="downloadVideo()">সার্চ করুন</button>
+        <div id="loading">খোঁজা হচ্ছে, একটু অপেক্ষা করুন...</div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function downloadVideo() {
+            const url = document.getElementById('urlInput').value;
+            if(!url) return alert("দয়া করে একটি লিংক দিন!");
+            
+            document.getElementById('result').innerHTML = "";
+            document.getElementById('loading').style.display = "block";
+
+            try {
+                const res = await fetch(`/api/download?url=${encodeURIComponent(url)}`);
+                const data = await res.json();
+                document.getElementById('loading').style.display = "none";
+
+                if(data.success) {
+                    document.getElementById('result').innerHTML = `<a href="${data.link}" target="_blank" class="btn">ভিডিওটি ডাউনলোড করুন</a>`;
+                } else {
+                    document.getElementById('result').innerHTML = `<p style="color:red;">দুঃখিত, ভিডিও পাওয়া যায়নি!</p>`;
+                }
+            } catch (e) {
+                document.getElementById('loading').style.display = "none";
+                document.getElementById('result').innerHTML = `<p style="color:red;">সার্ভার সমস্যা! আবার চেষ্টা করুন।</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
